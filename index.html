@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#ffffff">
+    <title>Dice Roller</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: transparent;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        .dice-container {
+            width: 100px;
+            height: 100px;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+
+        .dice {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 1s ease-out;
+        }
+
+        .face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: white;
+            border: 2px solid #333;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 48px;
+            font-weight: bold;
+            color: #333;
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.1);
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+        }
+
+        .front  { transform: translateZ(50px); }
+        .back   { transform: rotateX(180deg) translateZ(50px); }
+        .right  { transform: rotateY(90deg) translateZ(50px); }
+        .left   { transform: rotateY(-90deg) translateZ(50px); }
+        .top    { transform: rotateX(90deg) translateZ(50px); }
+        .bottom { transform: rotateX(-90deg) translateZ(50px); }
+    </style>
+</head>
+<body>
+    <div class="dice-container">
+        <div class="dice">
+            <div class="face front">1</div>
+            <div class="face back">6</div>
+            <div class="face right">4</div>
+            <div class="face left">3</div>
+            <div class="face top">2</div>
+            <div class="face bottom">5</div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const dice = document.querySelector('.dice');
+            const diceContainer = document.querySelector('.dice-container');
+            let isRolling = false;
+
+            const rotations = [
+                [0, 0],       // 1 (front)
+                [90, 0],      // 2 (top)
+                [0, -90],     // 3 (left)
+                [0, 90],      // 4 (right)
+                [-90, 0],     // 5 (bottom)
+                [180, 0]      // 6 (back)
+            ];
+
+            function rollDice(event) {
+                if (isRolling) return;
+                if (event.type === 'touchstart') event.preventDefault();
+
+                isRolling = true;
+
+                // Get random result
+                const result = Math.floor(Math.random() * 6);
+                const [rotateX, rotateY] = rotations[result];
+
+                // Add some extra rotation for effect
+                const extraRotation = Math.floor(Math.random() * 2) * 360;
+
+                // Apply the rotation
+                dice.style.transform = `rotateX(${rotateX + extraRotation}deg) rotateY(${rotateY}deg)`;
+
+                // Reset rolling state after animation
+                setTimeout(() => {
+                    isRolling = false;
+                }, 1000);
+            }
+
+            diceContainer.addEventListener('click', rollDice);
+            diceContainer.addEventListener('touchstart', rollDice, { passive: false });
+        });
+    </script>
+</body>
+</html>
